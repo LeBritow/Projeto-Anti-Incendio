@@ -1,0 +1,91 @@
+#include <dht.h>
+#include <LiquidCrystal.h>
+#define pinoDHT11 9
+
+int ledverm = 12;
+int ledamar = 11;
+int ledverd = 10;
+int buzzer = 8;
+dht sensorDHT11;
+LiquidCrystal lcd(7,6,5,4,3,2);
+
+byte num[8] = {
+	B00000,
+	B00100,
+	B01010,
+	B00100,
+	B00000,
+	B00000,
+	B00000,
+	B00000
+};
+
+void setup(){
+  Serial.begin(9600);
+  delay(2000);
+  pinMode(12, OUTPUT);
+  pinMode(11, OUTPUT);
+  pinMode(10, OUTPUT);
+  pinMode(buzzer, OUTPUT);
+  lcd.createChar(1,num);
+  lcd.begin(16,2);
+  lcd.clear();
+}
+
+void loop(){
+sensorDHT11.read11(pinoDHT11);
+if (sensorDHT11.temperature >58){
+  digitalWrite(12, HIGH);
+  lcd.setCursor(5,0);
+  lcd.print("ALERTA!");
+  lcd.setCursor(0,2);
+  lcd.print("Temp:");
+  lcd.print(sensorDHT11.temperature,0);
+  lcd.write((byte)1);
+  lcd.print(" Umi:");
+  lcd.print(sensorDHT11.humidity, 0);
+  lcd.print("%");
+  digitalWrite(12, HIGH);
+  delay(5);
+  digitalWrite(12, LOW);  
+  tone(buzzer,261);
+  delay(200);
+  noTone(buzzer);
+  tone(buzzer,293);
+  delay(200);
+  noTone(buzzer);
+  tone(buzzer,329);
+  delay(200);
+  noTone(buzzer);     
+  tone(buzzer,349);    
+  delay(200);    
+  noTone(buzzer); 
+  tone(buzzer,392);            
+  delay(200);
+  noTone(buzzer);
+  }
+if (sensorDHT11.temperature>26 && sensorDHT11.temperature<58){
+  digitalWrite(11, HIGH);
+  lcd.setCursor(0,0);
+  lcd.print("Temperatura alta.");
+  lcd.setCursor(0,2);
+  lcd.print("Temp:");
+  lcd.print(sensorDHT11.temperature,0);
+  lcd.write((byte)1);
+  lcd.print(" Umi:");
+  lcd.print(sensorDHT11.humidity, 0);
+  lcd.print("%");
+  }
+if (sensorDHT11.temperature<25){
+  digitalWrite(10, HIGH);
+  lcd.setCursor(1,0);
+  lcd.print("Anti-Incendio");
+  lcd.setCursor(0,2);
+  lcd.print("Temp:");
+  lcd.print(sensorDHT11.temperature,0);
+  lcd.write((byte)1);
+  lcd.print(" Umi:");
+  lcd.print(sensorDHT11.humidity, 0);
+  lcd.print("%");
+  }
+}
